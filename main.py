@@ -25,8 +25,7 @@ if __name__ == '__main__':
             'MP4_256_DUAL',
             'OGG_VORBIS_320',
             'OGG_VORBIS_160',
-            'OGG_VORBIS_96',
-            'AAC_24'
+            'OGG_VORBIS_96'
         ]
     )
     parser.add_argument(
