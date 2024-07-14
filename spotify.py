@@ -29,8 +29,7 @@ class Spotify:
     OGG_FORMATS = [
         'OGG_VORBIS_320',
         'OGG_VORBIS_160',
-        'OGG_VORBIS_96',
-        'AAC_24'
+        'OGG_VORBIS_96'
     ]
 
     def __init__(
