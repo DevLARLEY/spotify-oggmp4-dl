@@ -485,37 +485,6 @@ class Spotify:
         print()
         return output_file
 
-    @staticmethod
-    def _rebuild_ogg(file: str):
-        with open(file, "r+b") as ogg_file:
-            ogg_file.write(b"OggS")
-            ogg_file.seek(4)
-            ogg_file.write(b"\x00\x02")
-            ogg_file.seek(6)
-            ogg_file.write(b"\x00" * 10)
-            ogg_file.seek(72)
-            buffer = ogg_file.read(4)
-            ogg_file.seek(14)
-            ogg_file.write(buffer)
-            ogg_file.seek(18)
-            ogg_file.write(b"\x00" * 10)
-            ogg_file.seek(26)
-            ogg_file.write(b"\x01\x1E\x01vorbis")
-            ogg_file.seek(35)
-            ogg_file.write(b"\x00" * 10)
-            ogg_file.seek(39)
-            ogg_file.write(b"\x02")
-            ogg_file.seek(40)
-            ogg_file.write(b"\x44\xAC\x00\x00")
-            ogg_file.seek(48)
-            ogg_file.write(b"\x00\xE2\x04\x00")
-            ogg_file.seek(56)
-            ogg_file.write(b"\xB8\x01")
-            ogg_file.seek(58)
-            ogg_file.write(b"OggS")
-            ogg_file.seek(62)
-            ogg_file.write(b"\x00" * 10)
-
     def download(
             self,
             track_info: tuple[str, IDType]
@@ -642,9 +611,7 @@ class Spotify:
             output_file = f"{join(self.output_folder, clean)}.ogg"
 
             with open(output_file, 'wb') as fw:
-                fw.write(decrypted_buffer)
-
-            self._rebuild_ogg(output_file)
+                fw.write(decrypted_buffer[167:])
         else:
             return
 
