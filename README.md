@@ -13,7 +13,7 @@ Downloads Spotify Tracks/Albums/Playlists/Podcasts in MP4_128, MP4_256, OGG_VORB
 
 # Usage
 ```ruby
-usage: Spotify Downloader [-h] --id ID [--quality {MP4_128,MP4_128_DUAL,MP4_256,MP4_256_DUAL,OGG_VORBIS_320,OGG_VORBIS_160,OGG_VORBIS_96}] [--output OUTPUT] [--debug]
+usage: python main.py [-h] --id ID [--quality {MP4_128,MP4_128_DUAL,MP4_256,MP4_256_DUAL,OGG_VORBIS_320,OGG_VORBIS_160,OGG_VORBIS_96}] [--output OUTPUT] [--debug]
 
 options:
   -h, --help            show this help message and exit
