@@ -1,4 +1,5 @@
-requests~=2.32.3
-wget~=3.2
-pywidevine~=1.8.0
+requests
+wget
+pywidevine==1.8.0
 protobuf==5.27.2
+pycryptodome==3.20.0
