@@ -1,6 +1,10 @@
 # spotify-oggmp4-dl
 Downloads Spotify Tracks/Albums/Playlists/Podcasts in MP4_128, MP4_256, OGG_VORBIS_320, OGG_VORBIS_160 and OGG_VORBIS_96 formats 
 
+# Notice
+Spotify seems to be randomly blocking CDMs. Some work, some don't. \
+This could be the case on any phone (Spotify doesn't work in my phone in the browser).
+
 # Installation
 + Install the `requirements.txt` file
 + Install `protobuf==5.27.2` manually (ignore errors)
