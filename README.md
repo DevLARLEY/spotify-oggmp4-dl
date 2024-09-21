@@ -3,7 +3,7 @@ Downloads Spotify Tracks/Albums/Playlists/Podcasts in MP4_128, MP4_256, OGG_VORB
 
 # Notice
 Spotify seems to be randomly blocking CDMs. Some work, some don't. \
-This could be the case on any phone (Spotify doesn't work in my phone in the browser).
+This could be the case on any phone (Spotify doesn't work on my phone in the browser).
 
 # Installation
 + Install the `requirements.txt` file
