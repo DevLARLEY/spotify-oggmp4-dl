@@ -9,11 +9,8 @@ This could be the case on any phone (Spotify doesn't work on my phone in the bro
 + Install the `requirements.txt` file
 + Install `protobuf==5.27.2` manually (ignore errors)
 + MP4_***: Add a [CDM](https://forum.videohelp.com/threads/408031-Dumping-Your-own-L3-CDM-with-Android-Studio) in the `cdm` directory and [mp4decrypt](https://www.bento4.com/downloads/) in the `mp4decrypt` directory
-+ OGG_VORBIS_***: Place the [playplay](https://duckduckgo.com/?q=playplay+decryptor) binary inside the `playplay` directory
++ OGG_VORBIS_***: Place the [playplay](https://git.gay/DevLARLEY) binary inside the `playplay` directory
 + Enter your `sp_dc` Spotify Cookie when first starting the program
-
-> [!IMPORTANT]  
-> Premium account required
 
 # Usage
 ```ruby
