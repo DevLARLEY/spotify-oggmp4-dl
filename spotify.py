@@ -552,7 +552,7 @@ class Spotify:
             playplay_license_request = PlayPlayLicenseRequest(
                 version=2,
                 token=bytes.fromhex("01e132cae527bd21620e822f58514932"),
-                interactivity=Interactivity.INTERACTIVE,
+                interactivity=Interactivity.DOWNLOAD,
                 content_type=AUDIO_TRACK
             )
 
