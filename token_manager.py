@@ -10,7 +10,7 @@ import logging
 
 
 class TokenManager:
-    TOKEN_URL = 'https://open.spotify.com/get_access_token'
+    TOKEN_URL = 'https://open.spotify.com/api/token'
 
     HOTP_SECRET = b'5507145853487499592248630329347'
     HOTP_PERIOD = 30
