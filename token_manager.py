@@ -1,19 +1,20 @@
 import hashlib
 import hmac
+import logging
 import math
-import struct
 import time
+
 from curl_cffi import requests as curl_requests
 
 from config_manager import cM
-import logging
 
 
 class TokenManager:
     TOKEN_URL = 'https://open.spotify.com/api/token'
 
-    HOTP_SECRET = b'5507145853487499592248630329347'
+    HOTP_SECRET = b'369842419052127467699809458824356558155406871578518311232441077'
     HOTP_PERIOD = 30
+    HOTP_DIGITS = 6
 
     def __init__(self):
         self.sp_dc = None
@@ -30,38 +31,38 @@ class TokenManager:
 
         self.access_token = self.get_access_token()
 
-    @staticmethod
-    def _generate_hotp(secret: bytes, counter: int, digits: int = 6) -> str:
-        counter_bytes = struct.pack(">Q", counter)
+    def generate_hotp(self, timestamp: int) -> str:
+        counter = math.floor(timestamp / 1000 / self.HOTP_PERIOD)
+        counter_bytes = counter.to_bytes(8, byteorder='big')
 
-        hmac_digest = hmac.new(secret, counter_bytes, hashlib.sha1).digest()
+        h = hmac.new(self.HOTP_SECRET, counter_bytes, hashlib.sha1)
+        hmac_result = h.digest()
 
-        offset = hmac_digest[-1] & 0x0F
-        binary_code = (
-                (hmac_digest[offset] & 0x7F) << 24 |
-                (hmac_digest[offset + 1] & 0xFF) << 16 |
-                (hmac_digest[offset + 2] & 0xFF) << 8 |
-                (hmac_digest[offset + 3] & 0xFF)
+        offset = hmac_result[-1] & 0x0F
+        binary = (
+            (hmac_result[offset] & 0x7F) << 24
+            | (hmac_result[offset + 1] & 0xFF) << 16
+            | (hmac_result[offset + 2] & 0xFF) << 8
+            | (hmac_result[offset + 3] & 0xFF)
         )
 
-        otp = binary_code % (10 ** digits)
-
-        return str(otp).zfill(digits)
+        return str(binary % (10 ** self.HOTP_DIGITS)).zfill(self.HOTP_DIGITS)
 
     def _request_access_token(
             self,
             sp_dc: str
     ) -> tuple[str, str]:
-        timestamp = int(time.time() * 1000)
-        counter = math.floor(timestamp / 1000 / self.HOTP_PERIOD)
-        hotp = self._generate_hotp(self.HOTP_SECRET, counter)
+        server_time = int(time.time() * 1000)
+        hotp = self.generate_hotp(server_time)
 
         token_request = curl_requests.get(
             url=self.TOKEN_URL,
             params={
+                'reason': 'init',
                 'productType': 'web-player',
-                'totp': hotp,
-                'totpVer': '5'
+                'totp': str(hotp),
+                'totpServer': str(hotp),
+                'totpVer': '35',
             },
             cookies={
                 'sp_dc': sp_dc,

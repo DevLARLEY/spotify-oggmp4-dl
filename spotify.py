@@ -474,16 +474,24 @@ class Spotify:
         )
 
     @staticmethod
-    def _wget_download(url: str) -> str:
-        output_file = wget.download(
-            url=url,
-            bar=lambda c, t, _: print(
-                f'\r[INFO]: {round(c / t * 100)}% [{"#" * round(c / t * 100) + " " * (100 - round(c / t * 100))}] {round(c / 1000000, 2)}MB   ',
-                end=''
-            )
-        )
+    def _download(url: str, file_id: str) -> str:
+        response = requests.get(url, stream=True)
+        total = int(response.headers.get('content-length', 0))
+        chunk_size = 1024
+        downloaded = 0
+
+        with open(file_id, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+
+                    if total > 0:
+                        percent = downloaded / total * 100
+                        bar = "#" * int(percent) + " " * (100 - int(percent))
+                        print(f'\r[INFO]: {percent:.0f}% [{bar}] {downloaded / 1_000_000:.2f}MB   ', end='')
         print()
-        return output_file
+        return file_id
 
     def download(
             self,
@@ -522,7 +530,7 @@ class Spotify:
             if exists(file_id):
                 remove(file_id)
 
-            downloaded = self._wget_download(cdn_url)
+            downloaded = self._download(cdn_url, file_id)
 
             if not exists(downloaded):
                 logging.error("Downloaded file doesn't exist")
@@ -589,7 +597,7 @@ class Spotify:
             if exists(file_id):
                 remove(file_id)
 
-            downloaded = self._wget_download(cdn_url)
+            downloaded = self._download(cdn_url)
 
             cipher = AES.new(
                 key=key,
