@@ -4,6 +4,7 @@ import logging
 import math
 import time
 
+import requests
 from curl_cffi import requests as curl_requests
 
 from config_manager import cM
@@ -12,7 +13,7 @@ from config_manager import cM
 class TokenManager:
     TOKEN_URL = 'https://open.spotify.com/api/token'
 
-    HOTP_SECRET = b'369842419052127467699809458824356558155406871578518311232441077'
+    SPOTIFY_SECRETS_JSON = "https://raw.githubusercontent.com/Thereallo1026/spotify-secrets/refs/heads/main/secrets/secretDict.json"
     HOTP_PERIOD = 30
     HOTP_DIGITS = 6
 
@@ -20,6 +21,22 @@ class TokenManager:
         self.sp_dc = None
         self.access_token = None
         self.access_token_expire = -1
+
+        version, secret_cipher_bytes = self.get_latest_secret()
+        self.version = version
+        self.secret = self.derive_secret_number(secret_cipher_bytes).encode()
+
+    @staticmethod
+    def derive_secret_number(secret_cipher_bytes: list[int]) -> str:
+        transformed = [byte ^ ((i % 33) + 9) for i, byte in enumerate(secret_cipher_bytes)]
+        return "".join(str(n) for n in transformed)
+
+    def get_latest_secret(self) -> tuple[int, list[int]]:
+        response = requests.get(self.SPOTIFY_SECRETS_JSON)
+        response.raise_for_status()
+        secrets = response.json()
+        latest_version = max(int(v) for v in secrets.keys())
+        return latest_version, secrets[str(latest_version)]
 
     def query_sp_dc(self):
         if sp_dc := cM.simple_get('sp_dc'):
@@ -35,7 +52,7 @@ class TokenManager:
         counter = math.floor(timestamp / 1000 / self.HOTP_PERIOD)
         counter_bytes = counter.to_bytes(8, byteorder='big')
 
-        h = hmac.new(self.HOTP_SECRET, counter_bytes, hashlib.sha1)
+        h = hmac.new(self.secret, counter_bytes, hashlib.sha1)
         hmac_result = h.digest()
 
         offset = hmac_result[-1] & 0x0F
@@ -62,7 +79,7 @@ class TokenManager:
                 'productType': 'web-player',
                 'totp': str(hotp),
                 'totpServer': str(hotp),
-                'totpVer': '35',
+                'totpVer': str(self.version),
             },
             cookies={
                 'sp_dc': sp_dc,
